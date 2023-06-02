@@ -114,8 +114,41 @@ public class Bellman_Ford_ShortestPath {
             for(int v = 0; v < g.V(); v++){
                 if(v == s)
                     continue;
-                if(edgeTo[v] == null && )
+                if(edgeTo[v] == null && distTo[v] != Double.POSITIVE_INFINITY){
+                    System.err.println("distTo[] and edgeTo[] inconsistent");
+                    return false;
+                }
+            }
+            for(int v = 0; v < g.V(); v++){
+                for (Iterator<DirectedEdge> it = g.adj(v); it.hasNext(); ) {
+                    DirectedEdge e = it.next();
+                    int w = e.to();
+                    if(distTo[v] + e.weight() < distTo[w]){
+                        System.err.println("edge " + e + " not relaxed");
+                        return false;
+                    }
+                }
+            }
+            for(int w = 0; w < g.V(); w++){
+                if(edgeTo[w] == null) continue;
+                DirectedEdge e = edgeTo[w];
+                int v = e.from();
+                if(w != e.to())
+                    return false;
+                if(distTo[v] + e.weight() != distTo[w]){
+                    System.err.println("edge " + e + " on shortest path not tight");
+                    return false;
+                }
             }
         }
+        System.out.println("Satisfies optimality conditions");
+        System.out.println();
+        return true;
+    }
+
+    private void validateVertex(int v){
+        int V = distTo.length;
+        if(v < 0 || v >= V)
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
     }
 }
